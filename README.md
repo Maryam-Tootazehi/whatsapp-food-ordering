@@ -62,6 +62,8 @@ tests/
   architecture/   fails the build if a layer imports something it must not
 docs/
   requirements/   questions, user stories and requirements
+  design/         glossary and architecture (layers and context map)
+  adr/            architecture decision records: what we decided and why
 ```
 
 A test in `tests/architecture/` enforces the hexagonal rule: dependencies point inwards only.
