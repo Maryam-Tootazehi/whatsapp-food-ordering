@@ -2,7 +2,7 @@
 
 A WhatsApp assistant that lets customers of a family restaurant order food for pickup, book a table, and ask questions about the menu, in plain Italian or English.
 
-> **Status:** requirements phase. A pilot with a real family restaurant has been agreed; no code yet.
+> **Status:** design and early implementation. A pilot with a real family restaurant has been agreed. The domain layer is being built test-first on example data until the owner interview provides the real menu, hours and capacity.
 
 ## The problem
 
@@ -52,11 +52,32 @@ The project follows the software engineering process from the *Software Engineer
 ## Repository structure
 
 ```
+src/restaurant_assistant/
+  domain/         the restaurant's rules in plain Python: no FastAPI, LangGraph, Supabase or LLM
+  application/    use cases and ports (interfaces the outside world must implement)
+  storage/        repository adapters: in-memory now, Supabase (PostgreSQL) later
+  interfaces/     WhatsApp webhook, language model client, conversation flow (later)
+tests/
+  unit/           fast, deterministic tests with fakes; no API keys needed
+  architecture/   fails the build if a layer imports something it must not
 docs/
   requirements/   questions, user stories and requirements
 ```
 
-More folders will be added as the project moves into design and implementation.
+A test in `tests/architecture/` enforces the hexagonal rule: dependencies point inwards only.
+
+## Development
+
+Requires Python 3.12 and [Poetry](https://python-poetry.org/) 2.
+
+```bash
+poetry install
+poetry run pytest        # unit and architecture tests, offline
+poetry run ruff check .  # lint
+poetry run mypy          # strict type checking
+```
+
+GitHub Actions runs the same checks on every pull request.
 
 ## License
 

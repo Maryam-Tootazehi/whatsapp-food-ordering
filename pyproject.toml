@@ -1,0 +1,56 @@
+[project]
+name = "restaurant-assistant"
+version = "0.1.0"
+description = "WhatsApp assistant for a family restaurant: pickup orders, table bookings and menu questions in Italian and English."
+authors = [{ name = "Mary Toota" }]
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    # Time-zone database, so Europe/Rome works the same on every machine and in slim Docker images.
+    "tzdata (>=2024.1)",
+]
+
+[tool.poetry]
+packages = [{ include = "restaurant_assistant", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+pytest-cov = "^6.0"
+hypothesis = "^6.112"
+ruff = "^0.8"
+mypy = "^1.13"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# ---------- tools ----------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "eval: calls the real language model; excluded from normal runs (run with -m eval)",
+]
+
+[tool.coverage.run]
+source = ["src/restaurant_assistant"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "N", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["restaurant_assistant"]
