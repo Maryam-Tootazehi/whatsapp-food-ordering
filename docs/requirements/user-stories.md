@@ -47,13 +47,13 @@ As the owner, I want pickups only at times we are open and the kitchen has room,
 - **Given** a refused time, **then** the next possible slots are suggested.
 - **Given** a time like 20:07, **then** it falls into the 20:00–20:15 slot.
 
-### O2. Confirm before ordering (next PR)
+### O2. Confirm before ordering
 - **Given** a valid quote, **when** the assistant sends the summary, **then** nothing is saved until the customer confirms.
 - **Given** a quote, **when** the customer replies "sì" / "si" / "yes" / taps the Confirm button, **then** the order is saved and sent to the kitchen.
 - **Given** a quote, **when** the customer confirms, **then** availability, price and kitchen capacity are checked again in the same database transaction that saves the order, so two customers confirming at once cannot overbook one slot.
 - **Given** a quote older than 10 minutes, **when** the customer confirms, **then** the customer gets a fresh summary to confirm instead.
 
-### O3. Kitchen acceptance alert (draft)
+### O3. Kitchen acceptance alert
 - **Given** a placed order, **when** staff have not accepted it within 5 minutes, **then** the owner gets an alert.
 
 ## Epic C: Conversation (draft)
@@ -63,3 +63,21 @@ As the owner, I want pickups only at times we are open and the kitchen has room,
 
 ## Epic B: Bookings (draft, after the owner meeting)
 - B1. Book a table for N people at a time, checked against opening hours and table capacity.
+
+## Implementation note: order and confirmation milestone
+
+The domain rules of O2 and the overdue predicate of O3 are implemented locally. Saving orders,
+atomic capacity reservation, consent-message parsing and sending tickets/alerts are NOT implemented
+yet. See [the lifecycle and adapter checklist](../design/order-lifecycle.md).
+
+Additional acceptance criteria covered by domain tests:
+- Given a summary, when the menu changes, then the old summary keeps its original names and prices.
+- Given a summary, when the submitted quote id differs, then confirmation is refused.
+- Given an expired summary, changed price, sold-out dish or newly full kitchen, when confirmation
+  arrives, then the state stays awaiting customer; no order transition occurs.
+- Given an already confirmed or accepted order, when the same confirmation is retried on that
+  aggregate, then it is a no-op, not another order. Database deduplication remains separate work.
+- Given a customer-confirmed request, when staff reject it, then a staff identity, timestamp and
+  reason are recorded. Given no customer confirmation, staff cannot accept it.
+- Given five elapsed minutes since confirmation without a staff decision, then the overdue
+  predicate becomes true. It stays false for drafts, accepted orders and rejected orders.

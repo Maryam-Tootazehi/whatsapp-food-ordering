@@ -7,3 +7,4 @@ until the pilot goes live. Entries are generated from conventional commit messag
 - Project scaffold: Poetry, hexagonal layout, architecture test, CI.
 - Design documents: glossary, context map, first user stories with acceptance criteria, ADRs.
 - Domain: Money, Menu, MenuItem, Allergen declarations, MenuMatcher, Slot, OpeningHours, KitchenCapacity, PickupPolicy; in-memory menu repository with clearly marked example data.
+- Order lifecycle: immutable quotes and line snapshots, fresh confirmation checks, separate customer/staff states, overdue detection, and an offline walkthrough. Database persistence and message delivery are not included.
